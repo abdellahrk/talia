@@ -1,0 +1,7 @@
+package_rename_config:
+  android:
+    app_name: "Talia"
+    package_name: "com.frontslash.talia"
+  ios:
+    app_name: "Talia"
+    package_name: "com.frontslash.talia"
