@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Task implements DiagnosticableTreeMixin {
 
- int? get id; String get title; String get description; DateTime get dueDate;@TimeOfDayConverter() TimeOfDay get dueTime; int get isCompleted; int get isDue;
+ int? get id; String get title; String get description; DateTime get dueDate;@TimeOfDayConverter() TimeOfDay get dueTime; int get isCompleted; int get isDue; int get isAllDay; DateTime? get createdAt;
 /// Create a copy of Task
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,21 +29,21 @@ $TaskCopyWith<Task> get copyWith => _$TaskCopyWithImpl<Task>(this as Task, _$ide
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Task'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('title', title))..add(DiagnosticsProperty('description', description))..add(DiagnosticsProperty('dueDate', dueDate))..add(DiagnosticsProperty('dueTime', dueTime))..add(DiagnosticsProperty('isCompleted', isCompleted))..add(DiagnosticsProperty('isDue', isDue));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('title', title))..add(DiagnosticsProperty('description', description))..add(DiagnosticsProperty('dueDate', dueDate))..add(DiagnosticsProperty('dueTime', dueTime))..add(DiagnosticsProperty('isCompleted', isCompleted))..add(DiagnosticsProperty('isDue', isDue))..add(DiagnosticsProperty('isAllDay', isAllDay))..add(DiagnosticsProperty('createdAt', createdAt));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Task&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&(identical(other.dueTime, dueTime) || other.dueTime == dueTime)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.isDue, isDue) || other.isDue == isDue));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Task&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&(identical(other.dueTime, dueTime) || other.dueTime == dueTime)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.isDue, isDue) || other.isDue == isDue)&&(identical(other.isAllDay, isAllDay) || other.isAllDay == isAllDay)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,dueDate,dueTime,isCompleted,isDue);
+int get hashCode => Object.hash(runtimeType,id,title,description,dueDate,dueTime,isCompleted,isDue,isAllDay,createdAt);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Task(id: $id, title: $title, description: $description, dueDate: $dueDate, dueTime: $dueTime, isCompleted: $isCompleted, isDue: $isDue)';
+  return 'Task(id: $id, title: $title, description: $description, dueDate: $dueDate, dueTime: $dueTime, isCompleted: $isCompleted, isDue: $isDue, isAllDay: $isAllDay, createdAt: $createdAt)';
 }
 
 
@@ -54,7 +54,7 @@ abstract mixin class $TaskCopyWith<$Res>  {
   factory $TaskCopyWith(Task value, $Res Function(Task) _then) = _$TaskCopyWithImpl;
 @useResult
 $Res call({
- int? id, String title, String description, DateTime dueDate,@TimeOfDayConverter() TimeOfDay dueTime, int isCompleted, int isDue
+ int? id, String title, String description, DateTime dueDate,@TimeOfDayConverter() TimeOfDay dueTime, int isCompleted, int isDue, int isAllDay, DateTime? createdAt
 });
 
 
@@ -71,7 +71,7 @@ class _$TaskCopyWithImpl<$Res>
 
 /// Create a copy of Task
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? title = null,Object? description = null,Object? dueDate = null,Object? dueTime = null,Object? isCompleted = null,Object? isDue = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? title = null,Object? description = null,Object? dueDate = null,Object? dueTime = null,Object? isCompleted = null,Object? isDue = null,Object? isAllDay = null,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -80,7 +80,9 @@ as String,dueDate: null == dueDate ? _self.dueDate : dueDate // ignore: cast_nul
 as DateTime,dueTime: null == dueTime ? _self.dueTime : dueTime // ignore: cast_nullable_to_non_nullable
 as TimeOfDay,isCompleted: null == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
 as int,isDue: null == isDue ? _self.isDue : isDue // ignore: cast_nullable_to_non_nullable
-as int,
+as int,isAllDay: null == isAllDay ? _self.isAllDay : isAllDay // ignore: cast_nullable_to_non_nullable
+as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 
@@ -165,10 +167,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String title,  String description,  DateTime dueDate, @TimeOfDayConverter()  TimeOfDay dueTime,  int isCompleted,  int isDue)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String title,  String description,  DateTime dueDate, @TimeOfDayConverter()  TimeOfDay dueTime,  int isCompleted,  int isDue,  int isAllDay,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Task() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.dueDate,_that.dueTime,_that.isCompleted,_that.isDue);case _:
+return $default(_that.id,_that.title,_that.description,_that.dueDate,_that.dueTime,_that.isCompleted,_that.isDue,_that.isAllDay,_that.createdAt);case _:
   return orElse();
 
 }
@@ -186,10 +188,10 @@ return $default(_that.id,_that.title,_that.description,_that.dueDate,_that.dueTi
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String title,  String description,  DateTime dueDate, @TimeOfDayConverter()  TimeOfDay dueTime,  int isCompleted,  int isDue)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String title,  String description,  DateTime dueDate, @TimeOfDayConverter()  TimeOfDay dueTime,  int isCompleted,  int isDue,  int isAllDay,  DateTime? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _Task():
-return $default(_that.id,_that.title,_that.description,_that.dueDate,_that.dueTime,_that.isCompleted,_that.isDue);case _:
+return $default(_that.id,_that.title,_that.description,_that.dueDate,_that.dueTime,_that.isCompleted,_that.isDue,_that.isAllDay,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -206,10 +208,10 @@ return $default(_that.id,_that.title,_that.description,_that.dueDate,_that.dueTi
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String title,  String description,  DateTime dueDate, @TimeOfDayConverter()  TimeOfDay dueTime,  int isCompleted,  int isDue)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String title,  String description,  DateTime dueDate, @TimeOfDayConverter()  TimeOfDay dueTime,  int isCompleted,  int isDue,  int isAllDay,  DateTime? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Task() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.dueDate,_that.dueTime,_that.isCompleted,_that.isDue);case _:
+return $default(_that.id,_that.title,_that.description,_that.dueDate,_that.dueTime,_that.isCompleted,_that.isDue,_that.isAllDay,_that.createdAt);case _:
   return null;
 
 }
@@ -221,7 +223,7 @@ return $default(_that.id,_that.title,_that.description,_that.dueDate,_that.dueTi
 @JsonSerializable()
 
 class _Task with DiagnosticableTreeMixin implements Task {
-  const _Task({this.id, required this.title, required this.description, required this.dueDate, @TimeOfDayConverter() required this.dueTime, this.isCompleted = 0, this.isDue = 0});
+  const _Task({this.id, required this.title, required this.description, required this.dueDate, @TimeOfDayConverter() required this.dueTime, this.isCompleted = 0, this.isDue = 0, this.isAllDay = 0, this.createdAt});
   factory _Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
 
 @override final  int? id;
@@ -231,6 +233,8 @@ class _Task with DiagnosticableTreeMixin implements Task {
 @override@TimeOfDayConverter() final  TimeOfDay dueTime;
 @override@JsonKey() final  int isCompleted;
 @override@JsonKey() final  int isDue;
+@override@JsonKey() final  int isAllDay;
+@override final  DateTime? createdAt;
 
 /// Create a copy of Task
 /// with the given fields replaced by the non-null parameter values.
@@ -246,21 +250,21 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'Task'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('title', title))..add(DiagnosticsProperty('description', description))..add(DiagnosticsProperty('dueDate', dueDate))..add(DiagnosticsProperty('dueTime', dueTime))..add(DiagnosticsProperty('isCompleted', isCompleted))..add(DiagnosticsProperty('isDue', isDue));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('title', title))..add(DiagnosticsProperty('description', description))..add(DiagnosticsProperty('dueDate', dueDate))..add(DiagnosticsProperty('dueTime', dueTime))..add(DiagnosticsProperty('isCompleted', isCompleted))..add(DiagnosticsProperty('isDue', isDue))..add(DiagnosticsProperty('isAllDay', isAllDay))..add(DiagnosticsProperty('createdAt', createdAt));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Task&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&(identical(other.dueTime, dueTime) || other.dueTime == dueTime)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.isDue, isDue) || other.isDue == isDue));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Task&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&(identical(other.dueTime, dueTime) || other.dueTime == dueTime)&&(identical(other.isCompleted, isCompleted) || other.isCompleted == isCompleted)&&(identical(other.isDue, isDue) || other.isDue == isDue)&&(identical(other.isAllDay, isAllDay) || other.isAllDay == isAllDay)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,dueDate,dueTime,isCompleted,isDue);
+int get hashCode => Object.hash(runtimeType,id,title,description,dueDate,dueTime,isCompleted,isDue,isAllDay,createdAt);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'Task(id: $id, title: $title, description: $description, dueDate: $dueDate, dueTime: $dueTime, isCompleted: $isCompleted, isDue: $isDue)';
+  return 'Task(id: $id, title: $title, description: $description, dueDate: $dueDate, dueTime: $dueTime, isCompleted: $isCompleted, isDue: $isDue, isAllDay: $isAllDay, createdAt: $createdAt)';
 }
 
 
@@ -271,7 +275,7 @@ abstract mixin class _$TaskCopyWith<$Res> implements $TaskCopyWith<$Res> {
   factory _$TaskCopyWith(_Task value, $Res Function(_Task) _then) = __$TaskCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, String title, String description, DateTime dueDate,@TimeOfDayConverter() TimeOfDay dueTime, int isCompleted, int isDue
+ int? id, String title, String description, DateTime dueDate,@TimeOfDayConverter() TimeOfDay dueTime, int isCompleted, int isDue, int isAllDay, DateTime? createdAt
 });
 
 
@@ -288,7 +292,7 @@ class __$TaskCopyWithImpl<$Res>
 
 /// Create a copy of Task
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? title = null,Object? description = null,Object? dueDate = null,Object? dueTime = null,Object? isCompleted = null,Object? isDue = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? title = null,Object? description = null,Object? dueDate = null,Object? dueTime = null,Object? isCompleted = null,Object? isDue = null,Object? isAllDay = null,Object? createdAt = freezed,}) {
   return _then(_Task(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -297,7 +301,9 @@ as String,dueDate: null == dueDate ? _self.dueDate : dueDate // ignore: cast_nul
 as DateTime,dueTime: null == dueTime ? _self.dueTime : dueTime // ignore: cast_nullable_to_non_nullable
 as TimeOfDay,isCompleted: null == isCompleted ? _self.isCompleted : isCompleted // ignore: cast_nullable_to_non_nullable
 as int,isDue: null == isDue ? _self.isDue : isDue // ignore: cast_nullable_to_non_nullable
-as int,
+as int,isAllDay: null == isAllDay ? _self.isAllDay : isAllDay // ignore: cast_nullable_to_non_nullable
+as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

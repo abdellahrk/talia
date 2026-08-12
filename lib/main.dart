@@ -5,9 +5,11 @@ import 'package:tasks/route/routes.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tasks/screen/home/home_screen.dart';
 import 'package:tasks/screen/splash_screen.dart';
+import 'package:tasks/screen/task/task_screen.dart';
 import 'package:tasks/screen/widget/bottom_nav.dart';
 import 'package:tasks/service/cache_service.dart';
 import 'package:tasks/service/db_service.dart';
+import 'package:tasks/service/notification_service.dart';
 import 'package:tasks/service/task_service.dart';
 
 void main() async {
@@ -25,6 +27,7 @@ void configureDependencies() {
   getIt.registerSingleton<CacheService>(CacheService());
   getIt.registerSingleton<TaskService>(TaskService());
   getIt.registerSingleton<DbService>(DbService());
+  getIt.registerSingleton<NotificationService>(NotificationService());
 }
 
 class MyApp extends StatelessWidget {
@@ -36,6 +39,13 @@ class MyApp extends StatelessWidget {
     return M3EMaterialApp(
       title: 'Talia',
       routes: routeLists(context),
+      onGenerateRoute: (RouteSettings settings) {
+        if (settings.name == "/task") {
+          final int id = settings.arguments as int;
+          return MaterialPageRoute(builder: (context) => TaskScreen(id));
+        }
+        return null;
+      },
       // initialRoute: "/splash",
       // theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
       autoTheming: true,

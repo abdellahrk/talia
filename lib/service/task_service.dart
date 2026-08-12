@@ -1,6 +1,7 @@
 import 'package:signals/signals_core.dart';
 import 'package:tasks/main.dart';
 import 'package:tasks/model/task.dart';
+import 'package:tasks/model/task_item.dart';
 import 'package:tasks/service/db_service.dart';
 
 class TaskService {
@@ -36,6 +37,7 @@ class TaskService {
   Future<Task?> getTaskById(int id) async {
     try {
       task.value = await dbService.getTask(id);
+
       return task.value;
     } catch (e) {
       return null;
@@ -63,6 +65,16 @@ class TaskService {
     try {
       final tasks = await dbService.getRecentTasks();
       recentTasks.value = tasks;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  Future<List<TaskItem>> getTaskItems(int taskId) async {
+    loading.value = true;
+    try {
+      final taskItems = await dbService.getTaskItems(taskId);
+      return taskItems;
     } finally {
       loading.value = false;
     }

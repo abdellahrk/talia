@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:tasks/model/task.dart';
+import 'package:tasks/model/task_item.dart';
 
 class DbService {
   late Database database;
@@ -31,6 +32,9 @@ class DbService {
           _addCreatedDateAndTaskList(batch);
         }
         await batch.commit();
+      },
+      onConfigure: (Database db) async {
+        await db.execute('PRAGMA foreign_keys = ON');
       },
     );
   }
@@ -136,5 +140,16 @@ class DbService {
       });
     }
     return [];
+  }
+
+  Future<List<TaskItem>> getTaskItems(int taskId) async {
+    final List<Map<String, dynamic>> maps = await database.query(
+      'taskItems',
+      where: 'taskId = ?',
+      whereArgs: [taskId],
+    );
+    return List.generate(maps.length, (i) {
+      return TaskItem.fromJson(maps[i]);
+    });
   }
 }

@@ -282,7 +282,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         return SizedBox(height: 10);
                       },
                       itemBuilder: (BuildContext context, int index) {
-                        return RecentTaskCard(recentTasks[index]);
+                        return InkWell(
+                          onTap: () {
+                            Navigator.of(context).pushNamed(
+                              "/task",
+                              arguments: recentTasks[index].id,
+                            );
+                          },
+                          child: RecentTaskCard(recentTasks[index]),
+                        );
                       },
                     );
                   },
@@ -453,6 +461,7 @@ class _HomeScreenState extends State<HomeScreen> {
         hour: int.parse(timeParts[0]),
         minute: int.parse(timeParts[1]),
       ),
+      createdAt: DateTime.now(),
     );
     await getIt<TaskService>().addTask(task);
     if (!context.mounted) return;

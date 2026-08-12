@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:material_3_expressive/material_3_expressive.dart';
+import 'package:signals/signals_flutter.dart';
+import 'package:tasks/main.dart';
 import 'package:tasks/model/task.dart';
+import 'package:tasks/model/task_item.dart';
+import 'package:tasks/service/task_service.dart';
 
 class RecentTaskCard extends StatefulWidget {
   final Task task;
@@ -11,6 +15,19 @@ class RecentTaskCard extends StatefulWidget {
 }
 
 class _RecentTaskCardState extends State<RecentTaskCard> {
+  final taskItems = signal<List<TaskItem>?>([]);
+
+  @override
+  void initState() {
+    getTaskItems();
+    super.initState();
+  }
+
+  Future<void> getTaskItems() async {
+    final items = await getIt<TaskService>().getTaskItems(widget.task.id!);
+    taskItems.value = items;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = M3ETheme.of(context);
@@ -74,9 +91,25 @@ class _RecentTaskCardState extends State<RecentTaskCard> {
                     ),
                     Column(
                       children: [
-                        Icon(
-                          Icons.circle_outlined,
-                          color: theme.colorScheme.primary,
+                        // Icon(
+                        //   Icons.circle_outlined,
+                        //   color: theme.colorScheme.primary,
+                        // ),
+                        SizedBox(width: 10),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.task_alt_outlined,
+                              color: theme.colorScheme.primary,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              "${taskItems.value!.length}",
+                              style: theme.typeScale.bodySmall.copyWith(
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

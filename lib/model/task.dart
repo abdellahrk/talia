@@ -16,6 +16,8 @@ abstract class Task with _$Task {
     @TimeOfDayConverter() required TimeOfDay dueTime,
     @Default(0) int isCompleted,
     @Default(0) int isDue,
+    @Default(0) int isAllDay,
+    DateTime? createdAt,
   }) = _Task;
 
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
