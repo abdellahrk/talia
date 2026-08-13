@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_3_expressive/foundations/m3e_theme.dart';
+import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:tasks/main.dart';
 import 'package:tasks/service/task_service.dart';
@@ -14,6 +15,9 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+
   @override
   void initState() {
     getTask();
@@ -22,6 +26,7 @@ class _TaskScreenState extends State<TaskScreen> {
 
   @override
   void dispose() {
+    titleController.dispose();
     super.dispose();
   }
 
@@ -38,6 +43,9 @@ class _TaskScreenState extends State<TaskScreen> {
         child: SignalBuilder(
           builder: (context) {
             final task = getIt<TaskService>().task.value;
+            if (task == null) {
+              return Center(child: Text("No task found"));
+            }
             return Padding(
               padding: EdgeInsets.all(10.0),
               child: Column(
@@ -66,6 +74,98 @@ class _TaskScreenState extends State<TaskScreen> {
               ),
             );
           },
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: InkWell(
+          onTap: () {
+            _showBottomSheet();
+          },
+          borderRadius: BorderRadius.circular(50),
+          child: Container(
+            height: 40,
+            alignment: Alignment.center,
+            width: .maxFinite,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary,
+              borderRadius: BorderRadius.circular(50),
+              // border: Border.all(color: theme.colorScheme.danger, width: 0.8),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 5,
+              children: [
+                // Icon(icon, size: 14, color: filled ? white : colorPrimary),
+                Text(
+                  "Edit",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<dynamic> _showBottomSheet() {
+    final task = getIt<TaskService>().task.value;
+    final theme = M3ETheme.of(context);
+
+    if (null != task) {
+      titleController.text = task.title;
+      descriptionController.text = task.description;
+    }
+
+    return M3EBottomSheet.show<void>(
+      context,
+      builder: (context) => Padding(
+        padding: EdgeInsets.all(24),
+        child: SingleChildScrollView(
+          child: Container(
+            child: Column(
+              mainAxisAlignment: .start,
+              crossAxisAlignment: .start,
+              mainAxisSize: .min,
+              children: [
+                Text(
+                  task?.title ?? "",
+                  style: theme.typeScale.headlineSmall.copyWith(),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 10),
+                Column(
+                  children: [
+                    M3ETextField(controller: titleController, label: "Title"),
+                    SizedBox(height: 18),
+                    M3ETextField(
+                      controller: descriptionController,
+                      maxLines: 4,
+                      // label: "Details",
+                    ),
+                    SizedBox(height: 18),
+                    FilledButton(
+                      onPressed: () {
+                        M3EDatePicker.show(
+                          context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2100),
+                        );
+                      },
+                      child: Text("Date"),
+                    ),
+                    Text("hi"),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

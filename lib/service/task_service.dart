@@ -8,6 +8,7 @@ class TaskService {
   final loading = signal(false);
   DbService get dbService => getIt<DbService>();
   Signal<List<Task>?> upcomingTasks = signal<List<Task>?>([]);
+  Signal<List<Task>?> tasks = signal<List<Task>?>([]);
   Signal<List<Task>?> recentTasks = signal<List<Task>?>([]);
   final task = signal<Task?>(null);
 
@@ -23,7 +24,9 @@ class TaskService {
   }
 
   Future<List<Task>> getTasks() async {
-    return await dbService.getTasks();
+    final allTasks = await dbService.getTasks();
+    tasks.value = allTasks;
+    return allTasks;
   }
 
   Future<void> deleteTask(Task task) async {
@@ -45,9 +48,14 @@ class TaskService {
   }
 
   Future<List<Task>> getUpcomingTasks() async {
-    final tasks = await dbService.getUpcomingTasks();
-    upcomingTasks.value = tasks;
-    return tasks ?? [];
+    loading.value = true;
+    try {
+      final tasks = await dbService.getUpcomingTasks();
+      upcomingTasks.value = tasks;
+      return tasks ?? [];
+    } finally {
+      loading.value = false;
+    }
   }
 
   Future<List<Task>> getCompletedTasks() async {

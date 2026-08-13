@@ -19,7 +19,9 @@ class _RecentTaskCardState extends State<RecentTaskCard> {
 
   @override
   void initState() {
-    getTaskItems();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      getTaskItems();
+    });
     super.initState();
   }
 

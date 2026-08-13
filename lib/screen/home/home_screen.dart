@@ -7,6 +7,7 @@ import 'package:tasks/main.dart';
 import 'package:tasks/model/task.dart';
 import 'package:tasks/screen/widget/recent_task_card.dart';
 import 'package:tasks/service/cache_service.dart';
+import 'package:tasks/service/notification_service.dart';
 import 'package:tasks/service/task_service.dart';
 import 'package:tasks/utils/feedback.dart';
 
@@ -124,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         return const SizedBox(
                                           width: 20,
                                           height: 20,
-                                          child: CircularProgressIndicator(),
+                                          child: M3ELoadingIndicator(),
                                         );
                                       }
 
@@ -304,6 +305,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showDialog() {
+    getIt<NotificationService>().showNotification(
+      Task(
+        id: 3,
+        title: "test notif",
+        description: "nice notification",
+        dueDate: DateTime(2206),
+        dueTime: TimeOfDay(hour: 12, minute: 12),
+      ),
+    );
     showDialog(
       context: context,
       builder: (context) => Dialog(
