@@ -8,16 +8,16 @@ final StreamController<NotificationResponse> selectNotificationStream =
     StreamController<NotificationResponse>.broadcast();
 
 @pragma('vm:entry-point')
-void notificationTapBackground(NotificationResponse notificationResponse) {
-  print("Tapped");
-}
+void notificationTapBackground(NotificationResponse notificationResponse) {}
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   DidReceiveBackgroundNotificationResponseCallback?
-  onDidReceiveNotificationResponse() {}
+  onDidReceiveNotificationResponse() {
+    return null;
+  }
 
   Future<void> initialise() async {
     const AndroidInitializationSettings androidSettings =

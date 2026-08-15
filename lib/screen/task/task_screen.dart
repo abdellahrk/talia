@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:material_3_expressive/foundations/m3e_theme.dart';
+import 'package:flutter/foundation.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:tasks/main.dart';
+import 'package:tasks/model/task_item.dart';
 import 'package:tasks/service/task_service.dart';
+import 'package:tasks/utils/feedback.dart';
 
 class TaskScreen extends StatefulWidget {
   final int id;
@@ -17,6 +18,9 @@ class TaskScreen extends StatefulWidget {
 class _TaskScreenState extends State<TaskScreen> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+
+  final taskListTitle = TextEditingController();
+  final taskListDescription = TextEditingController();
 
   @override
   void initState() {
@@ -38,7 +42,11 @@ class _TaskScreenState extends State<TaskScreen> {
   Widget build(BuildContext context) {
     final theme = M3ETheme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text("Task")),
+      appBar: AppBar(
+        title: Text(getIt<TaskService>().task.value?.title ?? "Task"),
+        backgroundColor: M3ETheme.of(context).colorScheme.surfaceDim,
+        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.add))],
+      ),
       body: SingleChildScrollView(
         child: SignalBuilder(
           builder: (context) {
@@ -55,7 +63,7 @@ class _TaskScreenState extends State<TaskScreen> {
                   Text(
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    task!.title,
+                    task.title,
                     style: theme.typeScale.headlineMedium.copyWith(
                       color: theme.colorScheme.primary,
                       decoration: TextDecoration.none,
@@ -69,6 +77,77 @@ class _TaskScreenState extends State<TaskScreen> {
                       color: theme.colorScheme.primary,
                       decoration: TextDecoration.none,
                     ),
+                  ),
+                  SizedBox(height: 10),
+
+                  InkWell(
+                    onTap: () {
+                      _addTaskItemDialog();
+                    },
+                    child: Row(
+                      children: [Icon(Icons.add), Text("Add task item")],
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  SignalBuilder(
+                    builder: (BuildContext context) {
+                      final taskItems = getIt<TaskService>().taskItems.value;
+                      if (taskItems!.isEmpty) {
+                        return SizedBox.shrink();
+                      }
+                      return ListView.separated(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (BuildContext context, int index) {
+                          final taskItem = taskItems[index];
+                          return Dismissible(
+                            key: Key(taskItem.id.toString()),
+                            onDismissed: (direction) async {
+                              await getIt<TaskService>().deleteTaskItem(
+                                taskItem,
+                              );
+                            },
+                            child: InkWell(
+                              onDoubleTap: () {
+                                // TODO: Edit task item
+                              },
+                              child: ListTile(
+                                leading: Icon(Icons.light),
+                                title: Text(taskItem.title),
+                                subtitle: Text(
+                                  taskItem.createdAt!.toLocal().toString(),
+                                ),
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    if (taskItem.isCompleted == 0) {
+                                      getIt<TaskService>().updateTaskItem(
+                                        taskItem.copyWith(isCompleted: 1),
+                                      );
+                                      showSnackbar(context, "Task completed");
+                                    } else {
+                                      getIt<TaskService>().updateTaskItem(
+                                        taskItem.copyWith(isCompleted: 0),
+                                      );
+                                      showSnackbar(context, "Task uncompleted");
+                                    }
+                                    getIt<TaskService>().getTaskItems(
+                                      getIt<TaskService>().task.value!.id!,
+                                    );
+                                  },
+                                  icon: taskItem.isCompleted == 1
+                                      ? Icon(Icons.check_box_outlined)
+                                      : Icon(Icons.check_box_outline_blank),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return SizedBox(height: 2);
+                        },
+                        itemCount: taskItems.length,
+                      );
+                    },
                   ),
                 ],
               ),
@@ -110,6 +189,84 @@ class _TaskScreenState extends State<TaskScreen> {
         ),
       ),
     );
+  }
+
+  void _addTaskItemDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: .min,
+              children: [
+                TextField(
+                  controller: taskListTitle,
+                  decoration: InputDecoration(
+                    hintText: "Title",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  controller: taskListDescription,
+                  decoration: InputDecoration(
+                    hintText: "Description",
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 5,
+                ),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        _addTaskItem();
+                      },
+                      child: Card(
+                        semanticContainer: false,
+                        child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Text("Save"),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _addTaskItem() async {
+    if (taskListTitle.text.isEmpty) {
+      return;
+    }
+    final taskItem = TaskItem(
+      title: taskListTitle.text,
+      description: taskListDescription.text,
+      taskId: getIt<TaskService>().task.value!.id!,
+      createdAt: DateTime.now(),
+    );
+    await getIt<TaskService>().addTaskItem(taskItem);
+    taskListTitle.clear();
+    taskListDescription.clear();
+    await getIt<TaskService>().getTaskItems(
+      getIt<TaskService>().task.value!.id!,
+    );
+    showSnackbar(context, "Task added successfully");
+
+    try {
+      Navigator.pop(context);
+    } catch (e) {
+      if (kDebugMode) {
+        print("error $e");
+      }
+    }
   }
 
   Future<dynamic> _showBottomSheet() {

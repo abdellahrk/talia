@@ -1,15 +1,19 @@
-import 'package:signals/signals_core.dart';
+import 'package:flutter/foundation.dart';
+import 'package:signals/signals_flutter.dart';
 import 'package:tasks/main.dart';
 import 'package:tasks/model/task.dart';
 import 'package:tasks/model/task_item.dart';
 import 'package:tasks/service/db_service.dart';
 
 class TaskService {
+  final dynamic dbService;
+  TaskService(this.dbService);
   final loading = signal(false);
-  DbService get dbService => getIt<DbService>();
-  Signal<List<Task>?> upcomingTasks = signal<List<Task>?>([]);
-  Signal<List<Task>?> tasks = signal<List<Task>?>([]);
-  Signal<List<Task>?> recentTasks = signal<List<Task>?>([]);
+  // DbService get dbService => getIt<DbService>();
+  FlutterSignal<List<Task>?> upcomingTasks = signal<List<Task>?>([]);
+  FlutterSignal<List<Task>?> tasks = signal<List<Task>?>([]);
+  FlutterSignal<List<Task>?> recentTasks = signal<List<Task>?>([]);
+  FlutterSignal<List<TaskItem>?> taskItems = signal<List<TaskItem>?>([]);
   final task = signal<Task?>(null);
 
   Future<void> addTask(Task task) async {
@@ -18,6 +22,22 @@ class TaskService {
       await dbService.addTask(task);
       await getUpcomingTasks();
       await getRecentTasks();
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  Future<void> addTaskItem(TaskItem taskItem) async {
+    loading.value = true;
+    try {
+      final taskItemId = await dbService.addTaskItem(taskItem);
+      if (kDebugMode) {
+        print("taskItem id is $taskItemId");
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("error $e");
+      }
     } finally {
       loading.value = false;
     }
@@ -40,7 +60,9 @@ class TaskService {
   Future<Task?> getTaskById(int id) async {
     try {
       task.value = await dbService.getTask(id);
-
+      if (task.value != null) {
+        getTaskItems(task.value!.id!);
+      }
       return task.value;
     } catch (e) {
       return null;
@@ -82,9 +104,18 @@ class TaskService {
     loading.value = true;
     try {
       final taskItems = await dbService.getTaskItems(taskId);
+      this.taskItems.value = taskItems;
       return taskItems;
     } finally {
       loading.value = false;
     }
+  }
+
+  Future<void> deleteTaskItem(TaskItem taskItem) async {
+    await dbService.deleteTaskItem(taskItem);
+  }
+
+  Future<void> updateTaskItem(TaskItem taskItem) async {
+    await dbService.updateTaskItem(taskItem);
   }
 }

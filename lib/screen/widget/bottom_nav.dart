@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:material_3_expressive/components/navigation_bar/enums/m3e_nav_bar_enums.dart';
 import 'package:material_3_expressive/components/navigation_bar/models/m3e_navigation_bar_destination.dart';
 import 'package:material_3_expressive/material_3_expressive.dart';

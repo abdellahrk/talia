@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:tasks/main.dart';
@@ -35,7 +35,8 @@ class _RecentTaskCardState extends State<RecentTaskCard> {
     final theme = M3ETheme.of(context);
 
     return M3ECard(
-      child: Container(
+      // color: theme.,
+      child: SizedBox(
         width: .infinity,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,7 +57,7 @@ class _RecentTaskCardState extends State<RecentTaskCard> {
                         Text(
                           widget.task.title,
                           style: theme.typeScale.bodyMedium.copyWith(
-                            color: theme.colorScheme.primary,
+                            color: theme.colorScheme.info,
                             decoration: TextDecoration.none,
                             fontWeight: FontWeight.bold,
                           ),

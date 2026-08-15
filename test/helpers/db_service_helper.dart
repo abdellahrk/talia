@@ -1,18 +1,20 @@
+import 'dart:io';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:tasks/model/task.dart';
 import 'package:tasks/model/task_item.dart';
 
-class DbService {
+class DbServiceHelper {
   late Database database;
   final String taskTable = "tasks";
 
   Future<void> opendDb() async {
     var dbPath = await getDatabasesPath();
-    String path = join(dbPath, 'task_db.db');
+    String path = join(dbPath, 'task_db_test.db');
     database = await openDatabase(
       path,
-      version: 2,
+      version: 1,
       onCreate: (Database db, int version) async {
         await db.execute('''
         CREATE TABLE tasks(
@@ -22,21 +24,64 @@ class DbService {
           isCompleted INTEGER,
           dueDate TEXT,
           dueTime TEXT,
-          isDue INTEGER
+          isDue INTEGER,
+          isAllDay INTEGER DEFAULT 0,
+           createdAt TEXT
         )
       ''');
+        db.execute('''
+      CREATE TABLE taskItems(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        taskId INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT DEFAULT NULL,
+        isCompleted INTEGER NOT NULL DEFAULT 0,
+        createdAt TEXT,
+        FOREIGN KEY(taskId) REFERENCES tasks(id)
+      )
+    ''');
+        await db.execute('''
+      CREATE INDEX index_taskItems_taskId
+      ON taskItems(taskId)
+    ''');
       },
       onUpgrade: (Database db, int oldVersion, int newVersion) async {
-        Batch batch = db.batch();
-        if (oldVersion == 1) {
-          _addCreatedDateAndTaskList(batch);
+        if (oldVersion < 2) {
+          await db.execute('''
+      CREATE TABLE taskItems(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        taskId INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT DEFAULT NULL,
+        isCompleted INTEGER NOT NULL DEFAULT 0,
+        createdAt TEXT,
+        FOREIGN KEY(taskId) REFERENCES tasks(id)
+      )
+    ''');
+
+          await db.execute('''
+      CREATE INDEX index_taskItems_taskId
+      ON taskItems(taskId)
+    ''');
+        } else if (oldVersion < 3) {
+          await db.execute(
+            'ALTER TABLE tasks ADD COLUMN isAllDay INTEGER NOT NULL DEFAULT 0',
+          );
         }
-        await batch.commit();
       },
       onConfigure: (Database db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
     );
+  }
+
+  Future<void> resetDatabase() async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'task_db_test.db');
+
+    await deleteDatabase(path);
+
+    await opendDb();
   }
 
   void _addCreatedDateAndTaskList(Batch batch) {
@@ -50,10 +95,15 @@ class DbService {
           description TEXT DEFAULT NULL,
           isCompleted INTEGER DEFAULT 0, 
           createdAt TEXT, 
+          isAllDay INTEGER DEFAULT 0,
           FOREIGN KEY(taskId) REFERENCES tasks(id))''');
     batch.execute('''
       CREATE INDEX index_taskItems_taskId ON taskItems(taskId)
     ''');
+  }
+
+  void _addIsAllDay(Batch batch) {
+    batch.execute('ALTER TABLE tasks ADD COLUMN isAllDay INTEGER DEFAULT 0');
   }
 
   Future<int?> addTask(Task task) async {
@@ -172,5 +222,12 @@ class DbService {
       where: 'id = ?',
       whereArgs: [taskItem.id],
     );
+  }
+
+  Future<void> resetTestDatabase() async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'task_db_test.db');
+
+    await deleteDatabase(path);
   }
 }

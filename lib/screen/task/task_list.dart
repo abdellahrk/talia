@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:tasks/main.dart';
 import 'package:tasks/screen/widget/recent_task_card.dart';
 import 'package:tasks/service/task_service.dart';
+import 'package:material_3_expressive/material_3_expressive.dart';
 
 class TaskList extends StatefulWidget {
   const TaskList({super.key});
@@ -43,10 +43,9 @@ class _TaskListState extends State<TaskList> {
 
   @override
   Widget build(BuildContext context) {
-    final items = List<String>.generate(100, (i) => 'Item $i');
-
     return Scaffold(
-      appBar: AppBar(title: Text("Tasks")),
+      backgroundColor: M3ETheme.of(context).colorScheme.surfaceDim,
+      appBar: AppBar(title: Text("Tasks"), backgroundColor: Colors.transparent),
       body: SingleChildScrollView(
         controller: _scrollController,
         child: Container(

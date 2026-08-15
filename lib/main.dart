@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:hive_ce_flutter/adapters.dart';
-import 'package:material_3_expressive/material_3_expressive.dart';
 import 'package:tasks/route/routes.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tasks/screen/splash_screen.dart';
@@ -16,32 +14,38 @@ import 'package:timezone/timezone.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-  await Hive.openBox("user");
-  configureDependencies();
 
-  await getIt<DbService>().opendDb();
-  await getIt<NotificationService>().initialise();
-  await initializeTimezone();
+  await initializeApp();
+
   runApp(const MyApp());
 }
 
 final getIt = GetIt.instance;
 
 void configureDependencies() {
-  getIt.registerSingleton<CacheService>(CacheService());
-  getIt.registerSingleton<TaskService>(TaskService());
-  getIt.registerSingleton<DbService>(DbService());
   getIt.registerSingleton<NotificationService>(NotificationService());
+  getIt.registerSingleton<CacheService>(CacheService());
+  getIt.registerSingleton<DbService>(DbService());
+
+  getIt.registerSingleton<TaskService>(TaskService(getIt<DbService>()));
+}
+
+Future<void> initializeApp() async {
+  await Hive.initFlutter();
+
+  if (!Hive.isBoxOpen('user')) {
+    await Hive.openBox('user');
+  }
+
+  await initializeTimezone();
+
+  configureDependencies();
+
+  getIt<DbService>().opendDb();
+  getIt<NotificationService>().initialise();
 }
 
 Future<void> initializeTimezone() async {
-  print(tz.timeZoneDatabase.locations.containsKey('Africa/Douala'));
-  print(
-    tz.timeZoneDatabase.locations.keys
-        .where((x) => x.contains('Douala'))
-        .toList(),
-  );
   final timezone = await FlutterTimezone.getLocalTimezone();
 
   tz.initializeTimeZones();
@@ -58,7 +62,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return M3EMaterialApp(
+    return MaterialApp(
       title: 'Talia',
       routes: routeLists(context),
       onGenerateRoute: (RouteSettings settings) {
@@ -68,11 +72,19 @@ class MyApp extends StatelessWidget {
         }
         return null;
       },
-      autoTheming: true,
-      dynamicColoring: true,
-      drawUnderSystemBars: true,
-      data: M3EThemeData.light(seedColor: Colors.teal),
+      // autoTheming: true,
+      // dynamicColoring: true,
+      // drawUnderSystemBars: true,
+      // data: M3EThemeData.light(seedColor: Colors.teal),
       home: SplashScreen(),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.teal,
+          primary: Colors.teal,
+        ),
+        useMaterial3: true,
+        listTileTheme: ListTileThemeData(),
+      ),
     );
   }
 }

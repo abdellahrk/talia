@@ -1,6 +1,5 @@
 import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:tasks/main.dart';
 import 'package:tasks/service/cache_service.dart';
 
@@ -25,8 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
       childWidget: SizedBox(
         height: 200,
         width: 200,
-        child: Text("Splash Screen"),
-        //child: Image.asset("assets/dart_bird.png"),
+        child: Image.asset("assets/logo.png"),
       ),
       useImmersiveMode: true,
       onAnimationEnd: () => debugPrint("On Fade In End"),
