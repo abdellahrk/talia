@@ -12,7 +12,7 @@ class DbService {
     String path = join(dbPath, 'task_db.db');
     database = await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: (Database db, int version) async {
         await db.execute('''
         CREATE TABLE tasks(
