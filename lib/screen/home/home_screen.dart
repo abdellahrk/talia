@@ -304,15 +304,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showDialog() {
-    getIt<NotificationService>().showNotification(
-      Task(
-        id: 3,
-        title: "test notif",
-        description: "nice notification",
-        dueDate: DateTime(2206),
-        dueTime: TimeOfDay(hour: 12, minute: 12),
-      ),
-    );
+    // getIt<NotificationService>().showNotification(
+    //   Task(
+    //     id: 3,
+    //     title: "test notif",
+    //     description: "nice notification",
+    //     dueDate: DateTime(2206),
+    //     dueTime: TimeOfDay(hour: 12, minute: 12),
+    //   ),
+    // );
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -348,8 +348,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: TextField(
                       controller: dateController,
                       onTap: () async {
-                        final DateTime? pickedDate = await M3EDatePicker.show(
-                          context,
+                        final DateTime? pickedDate = await showDatePicker(
+                          context: context,
                           initialDate: DateTime.now(),
                           firstDate: DateTime(2020),
                           lastDate: DateTime(2100),
@@ -377,12 +377,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       controller: timeController,
                       readOnly: true,
                       onTap: () async {
-                        final hour = DateTime.now().hour;
-                        final minute = DateTime.now().minute;
-
-                        final pickedTime = await M3ETimePicker.show(
-                          context,
-                          initialTime: M3ETime(hour: hour, minute: minute),
+                        final pickedTime = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
                         );
 
                         if (pickedTime != null) {

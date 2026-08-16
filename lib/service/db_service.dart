@@ -12,7 +12,7 @@ class DbService {
     String path = join(dbPath, 'task_db.db');
     database = await openDatabase(
       path,
-      version: 2,
+      version: 1,
       onCreate: (Database db, int version) async {
         await db.execute('''
         CREATE TABLE tasks(
@@ -22,13 +22,27 @@ class DbService {
           isCompleted INTEGER,
           dueDate TEXT,
           dueTime TEXT,
-          isDue INTEGER
+          isDue INTEGER,
+          isAllDay INTEGER DEFAULT 0,
+          createdAt TEXT
         )
+      ''');
+        await db.execute('''
+        CREATE TABLE taskItems(
+          id INTEGER PRIMARY KEY AUTOINCREMENT, 
+          taskId INTEGER, 
+          title TEXT,
+          description TEXT DEFAULT NULL,
+          isCompleted INTEGER DEFAULT 0, 
+          createdAt TEXT,
+          FOREIGN KEY(taskId) REFERENCES tasks(id))''');
+        await db.execute('''
+          CREATE INDEX index_taskItems_taskId ON taskItems(taskId)
       ''');
       },
       onUpgrade: (Database db, int oldVersion, int newVersion) async {
         Batch batch = db.batch();
-        if (oldVersion == 1) {
+        if (oldVersion < 2) {
           _addCreatedDateAndTaskList(batch);
         }
         await batch.commit();
@@ -44,12 +58,12 @@ class DbService {
     batch.execute('ALTER TABLE tasks ADD COLUMN isAllDay INTEGER DEFAULT 0');
     batch.execute('''
         CREATE TABLE taskItems(
-          id INTEGER PRIMARY KEY AUTOINCREMENT, 
-          taskId INTEGER, 
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          taskId INTEGER,
           title TEXT,
           description TEXT DEFAULT NULL,
-          isCompleted INTEGER DEFAULT 0, 
-          createdAt TEXT, 
+          isCompleted INTEGER DEFAULT 0,
+          createdAt TEXT,
           FOREIGN KEY(taskId) REFERENCES tasks(id))''');
     batch.execute('''
       CREATE INDEX index_taskItems_taskId ON taskItems(taskId)

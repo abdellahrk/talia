@@ -6,10 +6,10 @@ import 'package:tasks/model/task_item.dart';
 import 'package:tasks/service/db_service.dart';
 
 class TaskService {
-  final dynamic dbService;
-  TaskService(this.dbService);
+  final dynamic db;
+  TaskService(this.db);
   final loading = signal(false);
-  // DbService get dbService => getIt<DbService>();
+  DbService get dbService => getIt<DbService>();
   FlutterSignal<List<Task>?> upcomingTasks = signal<List<Task>?>([]);
   FlutterSignal<List<Task>?> tasks = signal<List<Task>?>([]);
   FlutterSignal<List<Task>?> recentTasks = signal<List<Task>?>([]);

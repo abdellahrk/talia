@@ -317,7 +317,6 @@ class _TaskScreenState extends State<TaskScreen> {
                       },
                       child: Text("Date"),
                     ),
-                    Text("hi"),
                   ],
                 ),
               ],
