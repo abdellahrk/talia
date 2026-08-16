@@ -156,6 +156,20 @@ class DbService {
     return [];
   }
 
+  Future<List<Task>?> getTodaysTask() async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final maps = await database.query(
+      taskTable,
+      where: "dueDate = ?",
+      whereArgs: [today.toIso8601String()],
+    );
+
+    return List.generate(maps.length, (i) {
+      return Task.fromJson(maps[i]);
+    });
+  }
+
   Future<List<TaskItem>> getTaskItems(int taskId) async {
     final List<Map<String, dynamic>> maps = await database.query(
       'taskItems',

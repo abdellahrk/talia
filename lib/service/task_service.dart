@@ -13,6 +13,7 @@ class TaskService {
   FlutterSignal<List<Task>?> upcomingTasks = signal<List<Task>?>([]);
   FlutterSignal<List<Task>?> tasks = signal<List<Task>?>([]);
   FlutterSignal<List<Task>?> recentTasks = signal<List<Task>?>([]);
+  FlutterSignal<List<Task>?> todaysTasks = signal<List<Task>?>([]);
   FlutterSignal<List<TaskItem>?> taskItems = signal<List<TaskItem>?>([]);
   final task = signal<Task?>(null);
 
@@ -117,5 +118,15 @@ class TaskService {
 
   Future<void> updateTaskItem(TaskItem taskItem) async {
     await dbService.updateTaskItem(taskItem);
+  }
+
+  Future<List<Task>> getTodaysTask() async {
+    loading.value = true;
+    try {
+      final tasks = await dbService.getTodaysTask();
+      return tasks ?? [];
+    } finally {
+      loading.value = false;
+    }
   }
 }

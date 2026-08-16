@@ -25,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int barIndex = 1;
   final selectedTime = signal<String?>(null);
   DateTime? selectedDateValue;
+  TimeOfDay now = TimeOfDay.now();
 
   @override
   void initState() {
@@ -38,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
       getIt<TaskService>().getUpcomingTasks(),
       getIt<TaskService>().getRecentTasks(),
       getIt<TaskService>().getCompletedTasks(),
+      getIt<TaskService>().getTodaysTask(),
     ]);
   }
 
@@ -78,7 +80,9 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisSize: .min,
               children: [
                 Text(
-                  "Good Morning,",
+                  now.period == DayPeriod.am
+                      ? "Good Morning,"
+                      : "Good Evening,",
                   style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                 ),
                 Text(
@@ -171,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 mainAxisAlignment: .end,
                                 children: [
                                   Text(
-                                    "2",
+                                    "${getIt<TaskService>().todaysTasks.value!.length}",
                                     style: TextStyle(
                                       fontSize: 30,
                                       color: Colors.white,
