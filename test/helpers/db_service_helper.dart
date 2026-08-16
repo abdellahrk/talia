@@ -14,7 +14,7 @@ class DbServiceHelper {
     String path = join(dbPath, 'task_db_test.db');
     database = await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: (Database db, int version) async {
         await db.execute('''
         CREATE TABLE tasks(
@@ -63,10 +63,9 @@ class DbServiceHelper {
       CREATE INDEX index_taskItems_taskId
       ON taskItems(taskId)
     ''');
-        } else if (oldVersion < 3) {
-          await db.execute(
-            'ALTER TABLE tasks ADD COLUMN isAllDay INTEGER NOT NULL DEFAULT 0',
-          );
+        }
+        if (oldVersion == 1) {
+          _addCreatedDateAndTaskList(db.batch());
         }
       },
       onConfigure: (Database db) async {
@@ -85,8 +84,6 @@ class DbServiceHelper {
   }
 
   void _addCreatedDateAndTaskList(Batch batch) {
-    batch.execute('ALTER TABLE tasks ADD COLUMN createdAt TEXT');
-    batch.execute('ALTER TABLE tasks ADD COLUMN isAllDay INTEGER DEFAULT 0');
     batch.execute('''
         CREATE TABLE taskItems(
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -100,9 +97,7 @@ class DbServiceHelper {
     batch.execute('''
       CREATE INDEX index_taskItems_taskId ON taskItems(taskId)
     ''');
-  }
-
-  void _addIsAllDay(Batch batch) {
+    batch.execute('ALTER TABLE tasks ADD COLUMN createdAt TEXT');
     batch.execute('ALTER TABLE tasks ADD COLUMN isAllDay INTEGER DEFAULT 0');
   }
 
